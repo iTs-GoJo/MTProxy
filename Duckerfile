@@ -1,29 +1,21 @@
 FROM golang:1.21-alpine AS builder
-
-# نصب پیش‌نیازها
 RUN apk add --no-cache git make
-
-# کلون و بیلد fakemtg
 WORKDIR /build
+
+# کلون و بیلد
 RUN git clone https://github.com/9seconds/mtg.git . && \
-    make && \
-    cp mtg /usr/local/bin/fakemtg
+    make
 
-# ========== مرحله نهایی ==========
 FROM alpine:latest
+RUN apk add --no-cache openssl bash
 
-RUN apk add --no-cache openssl envsubst
+# ========== کپی باینری با اسم درست ==========
+COPY --from=builder /build/mtg /usr/local/bin/mtg
 
-# کپی باینری و فایل‌ها
-COPY --from=builder /usr/local/bin/fakemtg /usr/local/bin/
-COPY config.toml /app/config.toml
-COPY entrypoint.sh /entrypoint.sh
-
-RUN chmod +x /entrypoint.sh
+COPY start.sh /start.sh
+RUN chmod +x /start.sh && \
+    sed -i 's/\r$//' /start.sh
 
 WORKDIR /app
-
-# پورت داخلی
 EXPOSE 443
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/start.sh"]
