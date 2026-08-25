@@ -1,21 +1,8 @@
-FROM golang:1.21-alpine AS builder
-RUN apk add --no-cache git make
-WORKDIR /build
+FROM telegrammessenger/proxy:latest
 
-# کلون و بیلد با مشخصات دقیق
-RUN git clone https://github.com/9seconds/mtg.git . && \
-    GOOS=linux GOARCH=amd64 make
+ENV SECRET=""
+ENV PORT=443
+ENV WORKERS=4
+ENV TAG="https://t.me/YourChannel"
 
-FROM alpine:latest
-RUN apk add --no-cache openssl bash
-
-# کپی از مرحله بیلد
-COPY --from=builder /build/mtg /usr/local/bin/mtg
-RUN chmod +x /usr/local/bin/mtg
-
-COPY start.sh /start.sh
-RUN chmod +x /start.sh && sed -i 's/\r$//' /start.sh
-
-WORKDIR /app
 EXPOSE 443
-ENTRYPOINT ["/start.sh"]
