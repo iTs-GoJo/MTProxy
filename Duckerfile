@@ -3,6 +3,6 @@ FROM telegrammessenger/proxy:latest
 ENV SECRET=""
 ENV PORT=443
 ENV WORKERS=4
-ENV TAG="https://t.me/YourChannel"
+ENV TAG="https://t.me/DungeonMonarch"
 
 EXPOSE 443
