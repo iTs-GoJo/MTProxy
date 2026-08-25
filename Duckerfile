@@ -1,8 +1,26 @@
-FROM telegrammessenger/proxy:latest
+FROM golang:1.21-alpine AS builder
 
-ENV SECRET=""
-ENV PORT=443
-ENV WORKERS=4
-ENV TAG="https://t.me/DungeonMonarch"
+# نصب پیش‌نیازها
+RUN apk add --no-cache git make
 
+# کلون ریپو رسمی MTProxy
+WORKDIR /build
+RUN git clone https://github.com/TelegramMessenger/MTProxy.git . && \
+    make
+
+FROM alpine:latest
+
+# نصب پیش‌نیازهای اجرا
+RUN apk add --no-cache openssl
+
+# کپی باینری از مرحله بیلد
+COPY --from=builder /build/objs/bin/mtproto-proxy /usr/local/bin/mtproto-proxy
+RUN chmod +x /usr/local/bin/mtproto-proxy
+
+# کپی اسکریپت
+COPY start.sh /start.sh
+RUN chmod +x /start.sh && sed -i 's/\r$//' /start.sh
+
+WORKDIR /app
 EXPOSE 443
+ENTRYPOINT ["/start.sh"]
