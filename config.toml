@@ -1,0 +1,16 @@
+# پورت داخلی (روی Railway از TCP Proxy استفاده میکنیم)
+port = 443
+
+# Secret رو از محیط میگیریم (هنگام اجرا تولید میشه)
+secret = "{{ .SECRET }}"
+
+# Fake TLS برای عبور از محدودیت
+fake_tls_domain = "www.bing.com"
+
+# ========== نمایش کانال بالای صفحه ==========
+[mtproto]
+ad_tag = "https://t.me/DungeonMonarch"  # یا "@YourChannel"
+ad_text = "Channel"
+
+[logging]
+level = "info"
