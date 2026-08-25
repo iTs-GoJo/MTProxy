@@ -1,17 +1,13 @@
-FROM golang:1.21-alpine AS builder
-RUN apk add --no-cache git make
-WORKDIR /build
-
-# کلون و بیلد
-RUN git clone https://github.com/9seconds/mtg.git . && \
-    make
-
 FROM alpine:latest
-RUN apk add --no-cache openssl bash
 
-# ========== کپی باینری با اسم درست ==========
-COPY --from=builder /build/mtg /usr/local/bin/mtg
+# نصب پیش‌نیازها
+RUN apk add --no-cache openssl bash wget
 
+# دانلود مستقیم باینری از گیت‌هاب
+RUN wget -O /usr/local/bin/mtg https://github.com/9seconds/mtg/releases/download/v2.1.7/mtg-linux-amd64 && \
+    chmod +x /usr/local/bin/mtg
+
+# کپی اسکریپت
 COPY start.sh /start.sh
 RUN chmod +x /start.sh && \
     sed -i 's/\r$//' /start.sh
